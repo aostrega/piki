@@ -1,21 +1,21 @@
 #centerbox {
   position:absolute;
-	width:25em;
-	left:50%;
-	margin-left:-12.5em;
-	margin-top:2.5em;
+  width:25em;
+  left:50%;
+  margin-left:-12.5em;
+  margin-top:2.5em;
 }
 
 h1 {
-	font-size:1.8em;
-	margin-bottom:.5em;
+  font-size:1.8em;
+  margin-bottom:.5em;
 }
 
 li {
-	font-size:1.1em;
-	margin-bottom:.5em;
+  font-size:1.1em;
+  margin-bottom:.5em;
 }
 
 li a {
-	color:#9E1818;
+  color:#9E1818;
 }

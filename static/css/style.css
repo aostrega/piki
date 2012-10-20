@@ -6,11 +6,11 @@ body {
 }
 
 a {
-	color:#38231C;
+  color:#38231C;
 }
 
 a:hover {
-	color:#9E1818 !important;
+  color:#9E1818 !important;
 }
 
 a:active {
@@ -18,11 +18,11 @@ a:active {
 }
 
 i {
-	font-style:italic;
+  font-style:italic;
 }
 
 b {
-	font-weight:bold;
+  font-weight:bold;
 }
 
 .disabled {
@@ -32,13 +32,13 @@ b {
 }
 
 input {
-	font-family:Gentium Book Basic;
+  font-family:Gentium Book Basic;
 }
 
 input[type="text"], input[type="password"] {
-	color:#38231C;
-	background-color:#C29F77;
-	border:.2em solid #38231C;
+  color:#38231C;
+  background-color:#C29F77;
+  border:.2em solid #38231C;
   box-sizing:border-box;
   height:1.7em;
 }
@@ -49,11 +49,11 @@ input[type="text"]:focus, input[type="password"]:focus {
 }
 
 input[type="submit"] {
-	color:#C29F77;
-	background-color:#9E1818;
-	border-color:#9E1818;
-	border:0;
-	cursor:pointer;
+  color:#C29F77;
+  background-color:#9E1818;
+  border-color:#9E1818;
+  border:0;
+  cursor:pointer;
 }
 
 input[type="submit"]:active {

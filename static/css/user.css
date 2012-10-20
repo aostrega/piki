@@ -1,33 +1,33 @@
 #centerbox {
   position:absolute;
-	width:25em;
-	max-height:22.5em;
-	left:50%;
-	margin-left:-12.5em;
-	margin-top:2.5em;
+  width:25em;
+  max-height:22.5em;
+  left:50%;
+  margin-left:-12.5em;
+  margin-top:2.5em;
 }
 
 h1 {
-	font-size:2.3em;
-	margin-bottom:.2em;
+  font-size:2.3em;
+  margin-bottom:.2em;
 }
 
 h2 {
-	font-size:1.2em;
-	font-weight:bold;
-	margin-bottom:.5em;
+  font-size:1.2em;
+  font-weight:bold;
+  margin-bottom:.5em;
   margin-top:.75em;
 }
 
 li {
-	font-size:1.1em;
-	margin-bottom:.5em;
+  font-size:1.1em;
+  margin-bottom:.5em;
 }
 
 li a {
-	color:#9E1818;
+  color:#9E1818;
 }
 
 i {
-	font-style:italic;
+  font-style:italic;
 }
