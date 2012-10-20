@@ -3,6 +3,8 @@ Piki
 
 Piki is a personal wiki website designed to be as comfortable, intuitive and elegant as possible. The client code is written in CoffeeScript with jQuery and rangy, and the server is written in Python with Flask and Elixir. It is released under the MIT license.
 
+What makes it notable from a technical standpoint is that it uses a heavily scripted HTML5 contenteditable element as an unobtrusive editor.
+
 The live version is hosted here: [http://piki.heroku.com/](http://piki.heroku.com/)
 
 Prerequisites
