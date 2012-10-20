@@ -1,0 +1,21 @@
+{% extends 'boilerplate.html' %}
+
+{% block head %}
+  <title>{{ user.name }} on Piki</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}" />
+{% endblock %}
+
+{% block body %}
+  <div id="centerbox">
+	  <h1>{{ user.name }}</h1>
+	  <p><i>Member since {{ user.join_date.strftime("%B %d, %Y") }}</i></p>
+    {% if published_wikis %}
+	  <h2>Published wikis</h2>
+		<ul>
+	  {% for wiki in published_wikis %}
+	    <li><a href="{{ url_for('wiki', user_slug=user.name_slug, wiki_slug=wiki.title_slug) }}">{{ wiki.title }}</a></li>
+	  {% endfor %}
+	  </ul>
+    {% endif %}
+	</div>
+{% endblock %}

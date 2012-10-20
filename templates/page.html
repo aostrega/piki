@@ -1,0 +1,29 @@
+{% extends 'wiki_template.html' %}
+
+{% block head %}
+  <meta http-equiv="pragma" content="no-cache" />
+  {% if page.title == wiki.title %}
+  <title>{{ wiki.title }}</title>
+  {% elif not page %}
+  <title>Untitled - {{ wiki.title }}</title>
+  {% else %}
+  <title>{{ page.title }} - {{ wiki.title }}</title>
+  {% endif %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/wiki.css') }}" />
+{% endblock %}
+
+{% block content %}
+  {% if g.user == wiki.author %}
+  <div id="content" contenteditable="true">
+  {% else %}
+  <div id="content">
+  {% endif %}
+    {% if page %}
+    {{ page.content|safe }}
+    {% else %}
+    <h1></h1>
+    {% endif %}
+  </div>
+  <div id="hint"></div>
+  <textarea id="pastebox"></textarea>
+{% endblock %}

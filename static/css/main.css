@@ -1,0 +1,180 @@
+.centerbox {
+	position:absolute;
+	width:30em;
+	height:20em;
+	top:50%;
+	left:50%;
+	margin-left:-15em;
+	margin-top:-10.5em;
+}
+
+
+#menubox {
+	text-align:center;
+}
+
+.piki {
+	font-size:5.2em;
+	margin-bottom:.2em;
+}
+
+.piki a {
+	text-decoration:none;
+}
+
+.message {
+	font-size:1.35em;
+	font-style:italic;
+	margin-bottom:1.6em;
+}
+
+.message a {
+	color:#9E1818;
+}
+
+#flash {
+	color:#EEE;
+	margin-bottom:.1em;
+	margin-top:-.65em;
+}
+
+#menuitems a {
+	font-size:1.8em;
+	display:inline-block;
+  width:5.4em;
+	text-decoration:none;
+}
+
+#menuitems img {
+	width:3.2em;
+	height:3.2em;
+	margin-bottom:.35em;
+	margin-left:auto;
+	margin-right:auto;
+	background-size:3.2em !important;
+	background-repeat:no-repeat !important;
+}
+
+#menuitems h2 {
+	font-size:1.1em;
+}
+
+#menuitems .disabled {
+  color:#38231C;	
+}
+
+#menuitems .disabled:active {
+	opacity:.33;	
+}
+
+
+.hiddenbox {
+	background-color:#C29F77;
+	display:none;
+}
+
+
+#aboutbox {
+	text-align:center;
+}
+
+#credit {
+	margin-bottom:1em;
+}
+
+#greetz {
+	text-align:left;
+	font-style:normal;
+	margin-bottom:.6em;
+}
+
+#aboutbox ul {
+	text-align:left;
+	font-size:.9em;
+}
+
+#aboutbox li {
+	margin-bottom:.3em;
+}
+
+#aboutbox li a {
+	color:#9E1818;
+}
+
+.formbox form {
+	position:absolute;
+	top:50%;
+	left:50%;
+}
+
+.formbox h1 {
+	font-size:1.6em;
+	text-decoration:underline;
+	margin-bottom:1em;
+	margin-left:.1em;
+}
+
+.formbox a {
+	display:inline-block;
+	font-size:1em;
+	margin-top:.7em;
+	margin-left:.1em;
+	color:#9E1818;
+}
+
+.formbox .field {
+	margin-bottom:1em;
+}
+
+.formbox label {
+	font-size:1em;
+}
+
+.formbox input {
+	display:block;
+	font-size:1em;
+	margin-top:.25em;
+}
+
+.formbox .done {
+	float:right;
+	height:1.8em;
+	width:5em;
+	margin-right:0;
+}
+
+
+#signupbox form {
+	margin-top:-6.65em;
+	margin-left:-5.1em;
+	width:11.35em;
+}
+
+#signupbox p {
+  font-size:.8em;
+  margin-bottom:.5em;
+}
+
+#signupbox p a {
+  margin-top:.25em;
+}
+
+#loginbox form {
+	margin-top:-4.8em;
+	margin-left:-5.1em;
+	width:11.35em;
+}
+
+.remember {
+	margin-bottom:-.25em;
+}
+
+.remember input {
+	float:left;
+	margin-right:.4em;
+}
+
+.remember div {
+	font-size:1em;
+	padding-top:.4em;
+}

@@ -1,0 +1,17 @@
+{% extends 'boilerplate.html' %}
+
+{% block head %}
+  <title>Published wikis</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/read.css') }}" />
+{% endblock %}
+
+{% block body %}
+  <div id="centerbox">
+	  <h1>Published wikis</h1>
+	  <ul>
+	  {% for wiki in wikis|sort(attribute='update_date', reverse=True) %}
+	    <li><a href="{{ url_for('wiki', user_slug=wiki.author.name_slug, wiki_slug=wiki.title_slug) }}">{{ wiki.title }}</a> by <a href="{{ url_for('user', name_slug=wiki.author.name_slug) }}">{{ wiki.author.name }}</a></li>
+	  {% endfor %}
+	  </ul>
+	</div>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends 'boilerplate.html' %}
+
+{% block head %}
+  <title>Piki</title>
+  <meta name="author" content="Artur Ostręga" />
+  <meta name="description" content="An elegant personal wiki environment." />
+  <meta name="keywords" content="wiki, personal wiki, wiki engine, simple wiki, contenteditable, brown" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+{% endblock %}
+
+{% block body %}
+  <div id="menubox" class="centerbox">
+    <h1 class="piki"><a href="#about">Piki</a></h1>
+    {% with message = get_flashed_messages()[0] %}
+    {% if message %}
+    <p id="flash" class="message">{{ message|safe }}</p> 
+    {% else %}
+    {% endif %}
+    {% endwith %}
+    {% if g.user %}
+    <p class="message"><span id="greeting">Hello</span>, <a href="{{ url_for('user', name_slug=g.user.name_slug) }}">{{ g.user.name }}</a>. Or <a href="{{ url_for('logout') }}">are you someone else</a>?</p>
+    {% else %}
+    <p class="message"><span id="greeting">Hello</span>. Would you like to <a id="login" href="#log-in">log in</a>? Or <a id="signup" href="#sign-up">are you new</a>?</p>
+    {% endif %}
+    <script>
+      function updateGreeting() {
+        var hour = new Date().getHours();
+        var greeting_;
+        if      (hour>=6  && hour<=11) { greeting_ = "Good morning" }
+        else if (hour>=12 && hour<=17) { greeting_ = "Good afternoon" }
+        else if (hour>=18 && hour<=23) { greeting_ = "Good evening" }
+        else if (hour<=5)              { greeting_ = "Happy owling" }
+        var element = document.getElementById('greeting');
+        element.innerHTML = greeting_;
+      }
+      updateGreeting()
+      setInterval(updateGreeting(), 60*1000)
+    </script>
+    <div id="menuitems">
+      {% if g.user %}
+      <a href="{{ url_for('write') }}" onMouseOver="pencil.src='{{ url_for('static', filename='img/pencil-red.svg') }}'" onMouseOut="pencil.src='{{ url_for('static', filename='img/pencil.svg') }}'"><img name="pencil" src="{{ url_for('static', filename='img/pencil.svg') }}" /><h2>Write</h2></a>
+      {% else %}
+      <a class="disabled"><img src="{{ url_for('static', filename='img/pencil.svg') }}" /><h2>Write</h2></a>
+      {% endif %}
+  	  <a href="{{ url_for('read') }}" onMouseOver="book.src='{{ url_for('static', filename='img/book-red.svg') }}'" onMouseOut="book.src='{{ url_for('static', filename='img/book.svg') }}'"><img name="book" src="{{ url_for('static', filename='img/book.svg') }}" /><h2>Read</h2></a>
+  	  <a href="{{ url_for('wiki', user_slug='skofo', wiki_slug='piki') }}" onMouseOver="lightbulb.src='{{ url_for('static', filename='img/lightbulb-red.svg') }}'" onMouseOut="lightbulb.src='{{ url_for('static', filename='img/lightbulb.svg') }}'"><img name="lightbulb" src="{{ url_for('static', filename='img/lightbulb.svg') }}" /><h2>Learn</h2></a>
+  	</div>
+  </div>
+  <div id="aboutbox" class="centerbox hiddenbox">
+    <h1 class="piki"><a class="back" href="#">Piki</a></h1>
+    <p id="credit" class="message">Created by Artur Ostręga</p>
+    <p id="greetz" class="message">Greetings to</p>
+    <ul>
+      <li><b>Sylwia</b>— for inspiring me, encouraging me to pursue my dreams, and being a life partner more wonderful than I thought was possible;</li>
+      <li><b>my parents, Ray, Matt, Ashley, Betsy and Dai</b>— for keeping us alive and well while I was working on this;</li>
+      <li><b>Georgia</b>— for believing in me;</li>
+      <li><b>Victor Gaultney</b>— for designing the <a href="http://scripts.sil.org/Gentium">extremely good open typeface</a> featured here;</li>
+      <li>and <b>Jeremy Ashkenas</b>, <b>Tim Down</b>, and <b>John Resig</b>— for making this project <a href="http://coffeescript.org/">much</a> <a href="http://code.google.com/p/rangy/">more</a> <a href="http://jquery.com/">pleasant</a> to code.</li>
+    </ul>
+  </div>
+  <div id="loginbox" class="centerbox hiddenbox formbox">
+    <form action="login" method="post">
+      <div class="field"><label>Username</label><input type="text" name="name" /></div>
+      <div class="field"><label>Password</label><input type="password" name="password" /></div>
+      <input class="done" type="submit" value="Log in" />
+      <a class="back" href="#">« Back</a>
+    </form>
+  </div>
+  <div id="signupbox" class="centerbox hiddenbox formbox">
+    <form action="signup" method="post">
+      <div class="field"><label>Username</label><input type="text" name="name" /></div>
+      <div class="field"><label>Email</label><input type="text" name="email" /></div>
+      <div class="field"><label>Password</label><input type="password" name="password" /></div>
+      <p>By signing up you are agreeing to <a id="terms" href="javascript:void(0)">these terms</a>.</p>
+      <input class="done" type="submit" value="Sign up" />
+      <a class="back" href="#">« Back</a>
+    </form>
+  </div>
+  <script>
+    preloader = new Image();
+    preloader.src = "{{ url_for('static', filename='img/pencil-red.svg') }}"
+    preloader.src = "{{ url_for('static', filename='img/book-red.svg') }}"
+    preloader.src = "{{ url_for('static', filename='img/lightbulb-red.svg') }}"
+  </script>
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}

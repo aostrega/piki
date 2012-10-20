@@ -1,0 +1,87 @@
+{% extends 'boilerplate.html' %}
+
+{% block body %}
+  <div id="header">
+    <div id="menu">
+      <div id="menuleft">
+        <a id="title" href="{{ url_for('wiki', user_slug=user.name_slug, wiki_slug=wiki.title_slug) }}">{{ wiki.title }}</a>
+        <h2 id="credit"><span>by </span><a href="{{ url_for('user', name_slug=user.name_slug) }}">{{ user.name }}</a></h2>
+      </div>
+      <div id="menuright">
+        {% if g.user.id == wiki.author.id %}
+        {% if not settings %}
+        <a id="save" class="disabled{% if wiki.autosave %} autosave{% endif %}" href="javascript:void(0)">Saved</a>
+        {% endif %}
+        <div id="settings">
+          <span>Wiki Settings</span>
+          <ul id="settingsdropdown">
+            <form action="/:{{ user.name_slug }}/{{ wiki.title_slug }}/settings!" method="post">
+              <li class="expander">
+                <a>Title</a>
+                <div class="expansion">
+                  <input name="title" type="text" value="{{ wiki.title }}" />
+                </div>
+              </li>
+              <li class="expander">
+                <a>Publicity</a>
+                <div class="expansion">
+                  <label><input name="publicity" type="radio" value="private"{% if wiki.publicity == 0 %} checked{% endif %}> Private</label>
+                  <label><input name="publicity" type="radio" value="hidden"{% if wiki.publicity == 1 %} checked{% endif %}> Hidden</label>
+                  {% if user.verified %}
+                  <label><input name="publicity" type="radio" value="public"{% if wiki.publicity == 2 %} checked{% endif %}> Public</label>
+                  {% else %}
+                  <label class="disabled"><input name="publicity" type="radio" value="public"{% if wiki.publicity == 2 %} checked{% endif %} disabled> Public<br/>(Must verify email)</label>
+                  {% endif %}
+                </div>
+              </li>
+              <li class="expander">
+                <a>Autosave</a>
+                <div class="expansion">
+                  <label><input name="autosave" type="radio" value="on"{% if wiki.autosave %} checked{% endif %}> On</label>
+                  <label><input name="autosave" type="radio" value="off"{% if not wiki.autosave %} checked{% endif %}> Off</label>
+                </div>
+              </li>
+              <li id="deletewiki"><a>Delete</a></li>
+            </form>
+          </ul>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% block content %}
+  {% endblock %}
+  <div id="outerfooter">
+    <div id="innerfooter">
+      <div id="index">
+        <ul{% if wiki.pages|length < 6 %} id="shortlist"{% endif %}>
+        {% for p in wiki.ordered_pages() %}
+          {% if loop.first %}
+            <li><a href="{{ url_for('wiki', user_slug=user.name_slug, wiki_slug=wiki.title_slug) }}">{{ p.title }}</a></li>
+          {% else %}
+            <li><a href="{{ url_for('wiki_page', user_slug=user.name_slug, wiki_slug=wiki.title_slug, page_slug=p.title_slug) }}">{{ p.title }}</a></li>
+           {% endif %}
+        {% endfor %}
+        </ul>
+        <div id="dragmarker"></div>
+        <br />
+      </div>
+      <div id="footerbottom">
+        {% if g.user.id == wiki.author.id %}
+        <a id="addpage" href="{{ url_for('wiki', user_slug=user.name_slug, wiki_slug=wiki.title_slug) }}/untitled!">Add Page</a>
+        {% endif %}
+        <a id="writtenon" href="{{ url_for('main') }}">Written on Piki</a>
+        <br />
+      </div>
+    </div>
+  </div>
+
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/lib/rangy-core.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/lib/rangy-selectionsaverestore.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/lib/rangy-textrange.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/wiki.js') }}"></script>
+  {% if not page %}
+  <script>$('#content').focus()</script>
+  {% endif %}
+{% endblock %}

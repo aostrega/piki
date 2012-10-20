@@ -1,0 +1,19 @@
+{% extends 'boilerplate.html' %}
+
+{% block head %}
+  <title>Your wikis</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/write.css') }}" />
+{% endblock %}
+
+{% block body %}
+  <div id="centerbox">
+  	<h1>Your wikis</h1>
+		<ul>
+	  {% for wiki in g.user.wikis|sort(attribute='update_date', reverse=True) %}
+	    <li><a href="{{ url_for('wiki', user_slug=g.user.name_slug, wiki_slug=wiki.title_slug) }}">{{ wiki.title }}</a></li>
+	  {% endfor %}
+	    <li id="newwiki"><form action="write" method="post"><input type="text" name="title" placeholder="New wiki title" /><input type="submit" id="create" value="Create"></form></li>
+	  </ul>
+	</div>
+	{{ super() }}
+{% endblock %}
