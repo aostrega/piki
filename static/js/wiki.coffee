@@ -39,6 +39,39 @@ jQuery ->
     processReferences()
     bindEvents()
     window.setTimeout showHint, 10
+
+  # bindEvents binds web browser events to custom functions.
+  bindEvents = ->
+    # Editor events
+    $('#content').keydown keyDown
+    $('#content').click showHint
+    $('#content').blur -> $('#hint').hide()
+    $('#pastebox').focus pasteboxFocus
+    $('#content').on 'paste', paste
+    $('#save').click -> if not $(this).hasClass 'disabled' then save()
+
+    # Index events
+    $('#index li').mousedown indexMousedown
+    $('body').mouseup mouseup
+
+    # Settings events
+    $('#settings').hover (-> $('#settingsdropdown').show()), hideSettings
+    $('.expander a').click -> $(this).next().toggle() # Expand menu.
+    $('#deletewiki a').click -> 
+      # Ask for confirmation before deleting.
+      $(this).addClass 'reallydelete'
+      $(this).text "Really delete?"
+      path = window.location.pathname.split '/'
+      $(this).click -> window.location.href = "/#{path[1]}/#{path[2]}/delete!"
+    $('#deletewiki a').mouseleave ->
+      # Remove confirmation if it isn't clicked.
+      $(this).removeClass 'reallydelete'
+      $(this).text "Delete"
+      $(this).unbind 'click'
+    $('input').change saveSettings
+    $('#settingsdropdown form').submit -> false
+
+    window.onbeforeunload = quit
       
   # processReferences finds references to other pages in the content as well as
   #  URLS and emails, then creates links to them. The reference to the current 
@@ -90,150 +123,7 @@ jQuery ->
       rangy.getSelection().restoreCharacterRanges $('#content'), savedSelection
     catch error
       if error.type isnt 'undefined_method'
-        console.log error
-          
-  # alphanumeric returns whether a given character string or character code is
-  #  an alphanumeric character.
-  alphanumeric = (character) ->
-    if typeof character is 'string'
-      code = character.charCodeAt()
-    else
-      code = character
-    if (code < 48 or code > 122) or
-    (code > 57 and code < 65) or
-    (code > 90 and code < 97)
-      false
-    else
-      true  
-
-  # bindEvents binds web browser events to custom functions.
-  bindEvents = ->
-    $('#content').keydown keyDown
-    $('#content').click showHint
-    $('#content').blur -> $('#hint').hide()
-    $('#save').click -> if not $(this).hasClass 'disabled' then save()
-    $('#content').on 'paste', paste
-    $('#pastebox').focus pasteboxFocus
-    $('#index li').mousedown indexMousedown
-    $('body').mouseup mouseup
-    $('#settings').hover (-> $('#settingsdropdown').show()), 
-      (-> 
-        if $('input[name="title"]').is ':focus'
-          saveSettings()
-          $(this).blur() # TODO: Get this to work
-        $('#settingsdropdown').hide()
-        $('.expander a').next().hide()
-      )
-    $('.expander a').click -> $(this).next().toggle()
-    $('#deletewiki a').click -> 
-      $(this).addClass 'reallydelete'
-      $(this).text "Really delete?"
-      path = window.location.pathname.split '/'
-      $(this).click -> window.location.href = "/#{path[1]}/#{path[2]}/delete!"
-    $('#deletewiki a').mouseleave ->
-      $(this).removeClass 'reallydelete'
-      $(this).text "Delete"
-      $(this).unbind 'click'
-    $('input').change saveSettings
-    $('#settingsdropdown form').submit -> false
-    window.onbeforeunload = quit
-
-  # indexMousedown handles mouse down events on the page index.
-  indexMousedown = ->
-    if $('#content').attr 'contenteditable'
-      dragging = {}
-      dragging.entry = this
-      $(this).css 'opacity', .5
-      $('#dragmarker').css 'top', 0
-      $('#dragmarker').css 'left', 0
-      $('#dragmarker').show()
-      if $('#index li').length > 5
-        mouseHandler = verticalListingMousemove
-      else
-        mouseHandler = horizontalListingMousemove
-      $('li').mousemove {original: this}, mouseHandler
-      false
-
-  # verticalListingMousemove updates the drag marker between index listings
-  #  vertically.
-  verticalListingMousemove = (event) ->
-    $('#index').css 'cursor', 'move'
-    $('#index li a').css 'cursor', 'move'
-    $('#dragmarker').css 'width', '140px'
-    $('#dragmarker').css 'height', '1px'
-    x = $(this).offset().left
-    topY = $(this).offset().top
-    middleY = $(this).offset().top + $(this).height()/2
-    bottomY = $(this).offset().top + $(this).height()
-    mouseY = event.pageY
-    dragging.to = this
-    if this is event.data.original
-      $('#dragmarker').hide()
-    else
-      $('#dragmarker').show()
-    if mouseY > topY and mouseY < middleY
-      dragging.position = 'before'
-      $('#dragmarker').css 'top', topY
-    else
-      dragging.position = 'after'
-      $('#dragmarker').css 'top', bottomY
-    $('#dragmarker').css 'left', x
-    console.log dragging
-
-  # horizontalListingMousemove updates the drag marker between index listings
-  #  horizontally.
-  horizontalListingMousemove = (event) ->
-    $('#index').css 'cursor', 'move'
-    $('#index li a').css 'cursor', 'move'
-    $('#dragmarker').css 'width', '1px'
-    $('#dragmarker').css 'height', '30px'
-    $('#dragmarker').css 'margin-top', '5px'
-    leftX = $(this).offset().left
-    middleX = $(this).offset().left + $(this).width()/2
-    rightX = $(this).offset().left + $(this).width()
-    y = $(this).offset().top
-    mouseX = event.pageX
-    dragging.to = this
-    if this is event.data.original
-      $('#dragmarker').hide()
-    else
-      $('#dragmarker').show()
-    if mouseX > leftX and mouseX < middleX
-      dragging.position = 'before'
-      $('#dragmarker').css 'left', leftX-12
-    else
-      dragging.position = 'after'
-      $('#dragmarker').css 'left', rightX-12
-    $('#dragmarker').css 'top', y
-
-  # mouseup handles dropping an index listing after dragging it.
-  mouseup = ->
-    $(dragging.entry).css 'opacity', 1
-    if dragging.to isnt dragging.entry 
-      previously_preceding = $(dragging.entry).prev().text()
-      switch dragging.position
-        when 'before'
-          $(dragging.to).before $(dragging.entry)
-        when 'after'
-          $(dragging.to).after $(dragging.entry)
-      console.log $(dragging.entry).prev()
-      path = window.location.pathname.split '/'
-      $.ajax
-        type: 'POST'
-        url: "/#{path[1]}/#{path[2]}/update-index!"
-        traditional: true
-        data:
-          previously_preceding: previously_preceding
-          page: $(dragging.entry).text()
-          new_preceding: $(dragging.entry).prev().text()
-        dataType: 'text'
-        success: (response) ->
-          console.log response
-    dragging = []
-    $('#index').css 'cursor', 'default'
-    $('li a').css 'cursor', 'pointer'
-    $('#dragmarker').hide()
-    $('li').unbind 'mousemove'
+        console.log error 
 
   # keyDown handles any key presses in the editor.
   # -> key press event
@@ -318,29 +208,6 @@ jQuery ->
         document.title = "Untitled - #{wikiTitle}"
       else
         document.title = "#{pageTitle} - #{wikiTitle}"
-
-
-  # coordinate gets the coordinate of either the current selection's start or
-  #   end.
-  # -> START or END
-  # <- [BLOCK, CHARACTER] 
-  coordinate = (type) ->
-    try
-      selection = rangy.getSelection()
-    catch error
-      return [-1, -1]
-    if type is START
-      block = selection.anchorNode
-    else
-      block = selection.focusNode
-    if block.nodeName is '#text'
-      block = block.parentElement
-    blockCoord = $('#content h1, #content h2, #content h3, #content p').index block
-    if type is START
-      charCoord = selection.anchorOffset
-    else
-      charCoord = selection.focusOffset
-    [blockCoord, charCoord]
       
   # newBlock creates a new block and moves caret to it.
   # -> tag type ('P', 'H1'...), whether to replace current tag
@@ -389,6 +256,48 @@ jQuery ->
       $('#hint').show()
     else
       $('#hint').hide()
+
+  # coordinate gets the coordinate of either the current selection's start or
+  #   end.
+  # -> START or END
+  # <- [BLOCK, CHARACTER] 
+  coordinate = (type) ->
+    try
+      selection = rangy.getSelection()
+    catch error
+      return [-1, -1]
+    if type is START
+      block = selection.anchorNode
+    else
+      block = selection.focusNode
+    if block.nodeName is '#text'
+      block = block.parentElement
+    blockCoord = $('#content h1, #content h2, #content h3, #content p').index block
+    if type is START
+      charCoord = selection.anchorOffset
+    else
+      charCoord = selection.focusOffset
+    [blockCoord, charCoord]
+
+  # paste is the paste event handler. It pastes clipboard text
+  paste = ->
+    pasting = true
+    selection = rangy.saveSelection()
+    node = rangy.getSelection().focusNode.parentElement
+    $('#pastebox').css 'top', $(node).offset().top + $(node).height()
+    $('#pastebox').focus()
+    setTimeout ->
+      rangy.restoreSelection selection
+      document.execCommand 'insertHTML', true, $('#pastebox').val()
+      $('#pastebox').val ""
+      pasting = false
+
+  # pasteboxFocus is the event handler for focusing the invisible textarea that
+  #  removes formatting from clipboard text.
+  pasteboxFocus = ->
+    # If user is undoing and it affects the hidden paste box, undo again.
+    if not pasting
+      document.execCommand 'undo', false, null
 
   # save sends the page content to the server for storage.
   save = ->
@@ -457,37 +366,103 @@ jQuery ->
         processReferences()
         rangy.restoreSelection selection
 
-  # paste is the paste event handler. It pastes clipboard text
-  paste = ->
-    pasting = true
-    selection = rangy.saveSelection()
-    node = rangy.getSelection().focusNode.parentElement
-    $('#pastebox').css 'top', $(node).offset().top + $(node).height()
-    $('#pastebox').focus()
-    setTimeout ->
-      rangy.restoreSelection selection
-      document.execCommand 'insertHTML', true, $('#pastebox').val()
-      $('#pastebox').val ""
-      pasting = false
+  # indexMousedown handles mouse down events on the page index.
+  indexMousedown = ->
+    # If in editing mode, drag the index entry.
+    if $('#content').attr 'contenteditable'
+      dragging = {}
+      dragging.entry = this
+      $(this).css 'opacity', .5
+      $('#dragmarker').css 'top', 0
+      $('#dragmarker').css 'left', 0
+      $('#dragmarker').show()
+      if $('#index li').length > 5
+        mouseHandler = verticalEntryMousemove
+      else
+        mouseHandler = horizontalEntryMousemove
+      $('li').mousemove {original: this}, mouseHandler
+      false
 
-  # pasteboxFocus is the event handler for focusing the invisible textarea that
-  #  removes formatting from clipboard text.
-  pasteboxFocus = ->
-    # If user is undoing and it affects the hidden paste box, undo again.
-    if not pasting
-      document.execCommand 'undo', false, null
-
-  # titleUpdate updates the title based on the setting.
-  titleUpdate = ->
-    oldTitle = $('#title').text
-    newTitle = $('input[name="title"]').val() or "Untitled"
-    if document.title is oldTitle  
-      document.title = newTitle
+  # verticalEntryMousemove updates the drag marker between index entries
+  #  vertically (when there's more than one row of entries).
+  verticalEntryMousemove = (event) ->
+    $('#index').css 'cursor', 'move'
+    $('#index li a').css 'cursor', 'move'
+    $('#dragmarker').css 'width', '140px'
+    $('#dragmarker').css 'height', '1px'
+    x = $(this).offset().left
+    topY = $(this).offset().top
+    middleY = $(this).offset().top + $(this).height()/2
+    bottomY = $(this).offset().top + $(this).height()
+    mouseY = event.pageY
+    dragging.to = this
+    if this is event.data.original
+      $('#dragmarker').hide()
     else
-      document.title = $("h1").text() + ' - ' + newTitle
-    $('#title').text newTitle
-    $("h1:text(oldTitle)").text newTitle
-    $("#index a:text(oldTitle)").text newTitle
+      $('#dragmarker').show()
+    if mouseY > topY and mouseY < middleY
+      dragging.position = 'before'
+      $('#dragmarker').css 'top', topY
+    else
+      dragging.position = 'after'
+      $('#dragmarker').css 'top', bottomY
+    $('#dragmarker').css 'left', x
+    console.log dragging
+
+  # horizontalEntryMousemove updates the drag marker between index entries
+  #  horizontally (when there's one row of entries).
+  horizontalListingMousemove = (event) ->
+    $('#index').css 'cursor', 'move'
+    $('#index li a').css 'cursor', 'move'
+    $('#dragmarker').css 'width', '1px'
+    $('#dragmarker').css 'height', '30px'
+    $('#dragmarker').css 'margin-top', '5px'
+    leftX = $(this).offset().left
+    middleX = $(this).offset().left + $(this).width()/2
+    rightX = $(this).offset().left + $(this).width()
+    y = $(this).offset().top
+    mouseX = event.pageX
+    dragging.to = this
+    if this is event.data.original
+      $('#dragmarker').hide()
+    else
+      $('#dragmarker').show()
+    if mouseX > leftX and mouseX < middleX
+      dragging.position = 'before'
+      $('#dragmarker').css 'left', leftX-12
+    else
+      dragging.position = 'after'
+      $('#dragmarker').css 'left', rightX-12
+    $('#dragmarker').css 'top', y
+
+  # mouseup handles dropping an index listing after dragging it.
+  mouseup = ->
+    $(dragging.entry).css 'opacity', 1
+    if dragging.to isnt dragging.entry 
+      previously_preceding = $(dragging.entry).prev().text()
+      switch dragging.position
+        when 'before'
+          $(dragging.to).before $(dragging.entry)
+        when 'after'
+          $(dragging.to).after $(dragging.entry)
+      console.log $(dragging.entry).prev()
+      path = window.location.pathname.split '/'
+      $.ajax
+        type: 'POST'
+        url: "/#{path[1]}/#{path[2]}/update-index!"
+        traditional: true
+        data:
+          previously_preceding: previously_preceding
+          page: $(dragging.entry).text()
+          new_preceding: $(dragging.entry).prev().text()
+        dataType: 'text'
+        success: (response) ->
+          console.log response
+    dragging = []
+    $('#index').css 'cursor', 'default'
+    $('li a').css 'cursor', 'pointer'
+    $('#dragmarker').hide()
+    $('li').unbind 'mousemove'
 
   # saveSettings sends settings data to the server to be saved.
   saveSettings = ->
@@ -535,12 +510,47 @@ jQuery ->
         window.history.replaceState "", data.title, location
         processReferences()
 
+  # titleUpdate updates the title based on the setting.
+  titleUpdate = ->
+    oldTitle = $('#title').text
+    newTitle = $('input[name="title"]').val() or "Untitled"
+    if document.title is oldTitle  
+      document.title = newTitle
+    else
+      document.title = $("h1").text() + ' - ' + newTitle
+    $('#title').text newTitle
+    $("h1:text(oldTitle)").text newTitle
+    $("#index a:text(oldTitle)").text newTitle
+
+  # hideSettings hides the settings dropdown.
+  hideSettings = ->
+    # If the title input is in focus before hiding, save the settings.
+    if $('input[name="title"]').is ':focus'
+      saveSettings()
+      $(this).blur() # TODO: Get this to work
+    $('#settingsdropdown').hide()
+    $('.expander a').next().hide() # Collapse the menus.
+
   # quit
   quit = ->
     if $('#content[contenteditable]').length and $('#save').text() isnt "Saved"
       return "Hold on, you haven't saved yet."
     else
       return
+
+  # alphanumeric returns whether a given character string or character code is
+  #  an alphanumeric character.
+  alphanumeric = (character) ->
+    if typeof character is 'string'
+      code = character.charCodeAt()
+    else
+      code = character
+    if (code < 48 or code > 122) or
+    (code > 57 and code < 65) or
+    (code > 90 and code < 97)
+      false
+    else
+      true 
 
   # An extension selector for jQuery to find by text.
   $.expr[":"].text = (obj, index, meta, stack) ->
